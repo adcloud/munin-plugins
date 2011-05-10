@@ -1,0 +1,45 @@
+#!/usr/bin/env node
+// Munin plugin for CouchDB database io
+
+// Magic Markers for auto-configuration
+// #%# family=auto
+// #%# capabilities=autoconf suggest
+
+var sys = require("sys")
+  , exec = require("child_process").exec
+  , mode = "fetch"
+
+// could be "config" or "autoconf" mode
+if (process.argv[2] !== undefined) mode = process.argv[2]
+
+exec("free", function(err, data) {
+  var total = arguments[1].split("\n")[1].split(/\s+/)[1];
+
+  if (mode === 'config') {
+    sys.puts("graph_title CouchDB RAM usage")
+    sys.puts("graph_args --base 1024 -l 0 --vertical-label Bytes --upper-limit " + total)
+    sys.puts("graph_category couchdb")
+    sys.puts("memory_vsize.label virtual memory")
+    sys.puts("memory_vsize.draw AREA")
+    sys.puts("memory_rss.label real memory")
+    sys.puts("memory_rss.draw STACK")
+  } else {
+    var vsize = 0
+      , rss = 0
+    exec("ps -U couchdb -u couchdb u", function(err, data) {
+      data = data.split("\n")
+      data.shift()
+      data.pop()
+
+      data.forEach(function(line) {
+        var values = line.split(/\s+/)
+        vsize += parseInt(values[4])
+        rss += parseInt(values[5])
+      })
+
+      sys.puts("memory_vsize.value " + (vsize * 1024))
+      sys.puts("memory_rss.value " + (rss * 1024))
+    })
+  }
+})
+

@@ -1,0 +1,47 @@
+#!/usr/bin/env node
+// Munin plugin for CouchDB database io
+
+// Magic Markers for auto-configuration
+// #%# family=auto
+// #%# capabilities=autoconf suggest
+
+var sys = require("sys")
+  , exec = require("child_process").exec
+  , mode = "fetch"
+
+// could be "config" or "autoconf" mode
+if (process.argv[2] !== undefined) mode = process.argv[2]
+
+exec("cat /proc/stat |egrep '^cpu[0-9]+'|wc -l", function(err, ncpu) {
+  ncpu = parseInt(ncpu)
+  var percent = ncpu * 100
+    , maximum = percent
+    , limit = percent
+
+  if (mode === 'config') {
+    sys.puts("graph_title CouchDB CPU usage")
+    sys.puts("graph_args --base 1000 -r --lower-limit 0 --upper-limit " + limit)
+    sys.puts("graph_vlabel %")
+    sys.puts("graph_period second")
+    sys.puts("graph_category couchdb")
+    sys.puts("graph_scale no")
+    sys.puts("cpu.label cpu")
+    sys.puts('cpu.draw AREA')
+    sys.puts("cpu.max " + maximum)
+    sys.puts('cpu.min 0')
+    sys.puts('cpu.type DERIVE')
+  } else {
+    var cpu = 0
+    exec("top -b -n 1 | grep couchdb", function(err, data) {
+      data = data.split("\n")
+      data.pop()
+      data.forEach(function(line) {
+        var values = line.replace(/^\s+/, "").replace(/\s+$/, "").split(/\s+/)
+        cpu += parseFloat(values[8])
+      })
+
+      sys.puts("cpu.value " + (cpu * 10000))
+    })
+  }
+})
+

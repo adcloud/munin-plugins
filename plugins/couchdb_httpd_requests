@@ -1,0 +1,62 @@
+#!/usr/bin/env node
+// Munin plugin for CouchDB http requests
+
+// Magic Markers for auto-configuration
+// #%# family=auto
+// #%# capabilities=autoconf suggest
+
+var sys = require("sys")
+  , fs = require("fs")
+  , path = require("path")
+
+fs.realpath(__filename, function(err, realpath) {
+  require.paths.unshift(path.dirname(realpath) + "/vendor")
+
+  var cradle = require("cradle")
+    , conn = new(cradle.Connection)
+    , mode = "fetch"
+
+  // could be "config" or "autoconf" mode
+  if (process.argv[2] !== undefined) mode = process.argv[2]
+
+  if (mode === 'config') {
+    sys.puts("graph_title CouchDB httpd requests")
+    sys.puts("graph_args --base 1000")
+    sys.puts("graph_vlabel requests / \${graph_period}")
+    sys.puts("graph_category couchdb")
+    sys.puts("requests.label requests")
+    sys.puts("requests.type COUNTER")
+    sys.puts("requests.min 0")
+    sys.puts("requests.max 1000000")
+    sys.puts("bulk_requests.label bulk requests")
+    sys.puts("bulk_requests.type COUNTER")
+    sys.puts("bulk_requests.min 0")
+    sys.puts("bulk_requests.max 1000000")
+    sys.puts("view_reads.label view reads")
+    sys.puts("view_reads.type COUNTER")
+    sys.puts("view_reads.min 0")
+    sys.puts("view_reads.max 1000000")
+  } else {
+    conn.stats(function(err, stats) {
+      if (mode === 'autoconf') {
+        if (!err) {
+          sys.puts("yes")
+        } else {
+          sys.puts("no")
+          process.exit(1)
+        }
+      } else {
+        if (err || typeof stats.httpd.requests === "undefined") {
+          sys.puts("requests.value U")
+          sys.puts("bulk_requests.value U")
+          sys.puts("view_reads.value U")
+        } else {
+          sys.puts("requests.value " + (stats.httpd.requests.mean || 0))
+          sys.puts("bulk_requests.value " + (stats.httpd.bulk_requests.mean || 0))
+          sys.puts("view_reads.value " + (stats.httpd.view_reads.mean || 0))
+        }
+      }
+    })
+  }
+})
+

@@ -1,0 +1,49 @@
+#!/usr/bin/env node
+// Munin plugin for CouchDB request times
+
+// Magic Markers for auto-configuration
+// #%# family=auto
+// #%# capabilities=autoconf suggest
+
+var sys = require("sys")
+  , fs = require("fs")
+  , path = require("path")
+
+fs.realpath(__filename, function(err, realpath) {
+  require.paths.unshift(path.dirname(realpath) + "/vendor")
+
+  var cradle = require("cradle")
+    , conn = new(cradle.Connection)
+    , mode = "fetch"
+
+  // could be "config" or "autoconf" mode
+  if (process.argv[2] !== undefined) mode = process.argv[2]
+
+  if (mode === 'config') {
+    sys.puts("graph_title CouchDB httpd request times")
+    sys.puts("graph_vlabel request time in ms")
+    sys.puts("graph_category couchdb")
+    sys.puts("request_time.label request time")
+    sys.puts("request_time.type COUNTER")
+    sys.puts("request_time.min 0")
+    sys.puts("request_time.max 1000")
+  } else {
+    conn.stats(function(err, stats) {
+      if (mode === 'autoconf') {
+        if (!err) {
+          sys.puts("yes")
+        } else {
+          sys.puts("no")
+          process.exit(1)
+        }
+      } else {
+        if (err || typeof stats.couchdb.request_time === "undefined") {
+          sys.puts("request_time.value U")
+        } else {
+          sys.puts("request_time.value " + (stats.couchdb.request_time.mean || 0))
+        }
+      }
+    })
+  }
+})
+

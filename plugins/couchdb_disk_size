@@ -1,0 +1,57 @@
+#!/usr/bin/env node
+// Munin plugin for CouchDB database disk sizes
+
+// Magic Markers for auto-configuration
+// #%# family=auto
+// #%# capabilities=autoconf suggest
+
+var sys = require("sys")
+  , fs = require("fs")
+  , path = require("path")
+
+fs.realpath(__filename, function(err, realpath) {
+  require.paths.unshift(path.dirname(realpath) + "/vendor")
+
+  var cradle = require("cradle")
+    , conn = new(cradle.Connection)
+    , mode = "fetch"
+
+  // could be "config" or "autoconf" mode
+  if (process.argv[2] !== undefined) mode = process.argv[2]
+
+  conn.databases(function(err, dbs) {
+    if (mode === 'autoconf') {
+      if (!err) {
+        sys.puts("yes")
+      } else {
+        sys.puts("no")
+        process.exit(1)
+      }
+    } else {
+      if (err) throw err
+
+      if (mode === 'config') {
+        sys.puts("graph_title CouchDB db disk sizes")
+        sys.puts("graph_args --base 1024")
+        sys.puts("graph_vlabel Disk sizes in Megabytes")
+        sys.puts("graph_category couchdb")
+      }
+
+      dbs.forEach(function(db, idx) {
+        if (mode === 'config') {
+          sys.puts(db + "_disk_size.label " + db)
+          sys.puts(db + "_disk_size.draw " + (idx ? "STACK" : "AREA"))
+        } else {
+          conn.database(db).info(function (err, info) {
+            if (err) {
+              sys.puts(db + "_disk_size.value U")
+            } else {
+              sys.puts(db + "_disk_size.value " + (info.disk_size || 0))
+            }
+          })
+        }
+      })
+    }
+  })
+})
+

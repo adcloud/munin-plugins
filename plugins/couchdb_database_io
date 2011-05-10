@@ -1,0 +1,58 @@
+#!/usr/bin/env node
+// Munin plugin for CouchDB database io
+
+// Magic Markers for auto-configuration
+// #%# family=auto
+// #%# capabilities=autoconf suggest
+
+var sys = require("sys")
+  , fs = require("fs")
+  , path = require("path")
+
+fs.realpath(__filename, function(err, realpath) {
+  require.paths.unshift(path.dirname(realpath) + "/vendor")
+
+  var cradle = require("cradle")
+    , conn = new(cradle.Connection)
+    , mode = "fetch"
+
+  // could be "config" or "autoconf" mode
+  if (process.argv[2] !== undefined) mode = process.argv[2]
+
+  if (mode === 'config') {
+    sys.puts("graph_title CouchDB database I/O statistics")
+    sys.puts("graph_args --base 1000")
+    sys.puts("graph_vlabel number of reads (-) and writes (+) / \${graph_period}")
+    sys.puts("graph_category couchdb")
+    sys.puts("reads.label reads")
+    sys.puts("reads.graph no")
+    sys.puts("reads.type COUNTER")
+    sys.puts("reads.min 0")
+    sys.puts("reads.max 1000000")
+    sys.puts("writes.label reads/writes")
+    sys.puts("writes.type COUNTER")
+    sys.puts("writes.min 0")
+    sys.puts("writes.max 1000000")
+    sys.puts("writes.negative reads")
+  } else {
+    conn.stats(function(err, stats) {
+      if (mode === 'autoconf') {
+        if (!err) {
+          sys.puts("yes")
+        } else {
+          sys.puts("no")
+          process.exit(1)
+        }
+      } else {
+        if (err) {
+          sys.puts("reads.value U")
+          sys.puts("writes.value U")
+        } else {
+          sys.puts("reads.value " + (stats.couchdb.database_reads.mean || 0))
+          sys.puts("writes.value " + (stats.couchdb.database_writes.mean || 0))
+        }
+      }
+    })
+  }
+})
+

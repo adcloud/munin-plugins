@@ -1,0 +1,57 @@
+#!/usr/bin/env node
+// Munin plugin for CouchDB request methods
+
+// Magic Markers for auto-configuration
+// #%# family=auto
+// #%# capabilities=autoconf suggest
+
+var sys = require("sys")
+  , fs = require("fs")
+  , path = require("path")
+
+fs.realpath(__filename, function(err, realpath) {
+  require.paths.unshift(path.dirname(realpath) + "/vendor")
+
+  var cradle = require("cradle")
+    , conn = new(cradle.Connection)
+    , mode = "fetch"
+    , verbs = ['GET', 'PUT', 'POST', 'DELETE', 'COPY', 'HEAD', 'MOVE']
+
+  // could be "config" or "autoconf" mode
+  if (process.argv[2] !== undefined) mode = process.argv[2]
+
+  if (mode === 'config') {
+    sys.puts("graph_title CouchDB httpd request methods")
+    sys.puts("graph_args --base 1000")
+    sys.puts("graph_vlabel requests / \${graph_period}")
+    sys.puts("graph_category couchdb")
+
+    verbs.forEach(function(verb, idx) {
+      sys.puts(verb + ".label HTTP " + verb)
+      sys.puts(verb + ".type COUNTER")
+      sys.puts(verb + ".min 0")
+      sys.puts(verb + ".max 1000000")
+      sys.puts(verb + ".draw " + (idx ? "STACK" : "AREA"))
+    })
+  } else {
+    conn.stats(function(err, stats) {
+      if (mode === 'autoconf') {
+        if (!err) {
+          sys.puts("yes")
+        } else {
+          sys.puts("no")
+          process.exit(1)
+        }
+      } else {
+        verbs.forEach(function(verb) {
+          if (err || typeof stats.httpd_request_methods[verb] === "undefined") {
+            sys.puts(verb + ".value U")
+          } else {
+            sys.puts(verb + ".value " + (stats.httpd_request_methods[verb].mean || 0))
+          }
+        })
+      }
+    })
+  }
+})
+
