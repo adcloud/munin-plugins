@@ -49,4 +49,4 @@ if [ "$1" = "config" ]; then
   exit 0
 fi
 
-netstat -nt | grep ":80" | awk '/^tcp/ { states[$6]++ } END { for (idx in states) print idx ".value " states[idx] }'
+netstat -nt | grep ":80 " | awk '/^tcp/ { states[$6]++ } END { for (idx in states) print idx ".value " states[idx] }'
