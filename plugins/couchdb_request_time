@@ -21,10 +21,10 @@ fs.realpath(__filename, function(err, realpath) {
 
   if (mode === 'config') {
     sys.puts("graph_title CouchDB httpd request times")
-    sys.puts("graph_vlabel request time in ms")
+    sys.puts("graph_vlabel avg request time in ms")
     sys.puts("graph_category couchdb")
     sys.puts("request_time.label request time")
-    sys.puts("request_time.type COUNTER")
+    sys.puts("request_time.type GAUGE")
     sys.puts("request_time.min 0")
     sys.puts("request_time.max 1000")
   } else {
