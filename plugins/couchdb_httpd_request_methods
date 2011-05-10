@@ -15,7 +15,7 @@ fs.realpath(__filename, function(err, realpath) {
   var cradle = require("cradle")
     , conn = new(cradle.Connection)
     , mode = "fetch"
-    , verbs = ['GET', 'PUT', 'POST', 'DELETE', 'COPY', 'HEAD', 'MOVE']
+    , verbs = ['GET', 'PUT', 'POST', 'DELETE', 'COPY', 'HEAD']
 
   // could be "config" or "autoconf" mode
   if (process.argv[2] !== undefined) mode = process.argv[2]
