@@ -51,9 +51,9 @@ fs.realpath(__filename, function(err, realpath) {
           sys.puts("bulk_requests.value U")
           sys.puts("view_reads.value U")
         } else {
-          sys.puts("requests.value " + (stats.httpd.requests.mean || 0))
-          sys.puts("bulk_requests.value " + (stats.httpd.bulk_requests.mean || 0))
-          sys.puts("view_reads.value " + (stats.httpd.view_reads.mean || 0))
+          sys.puts("requests.value " + (stats.httpd.requests.sum || 0))
+          sys.puts("bulk_requests.value " + (stats.httpd.bulk_requests.sum || 0))
+          sys.puts("view_reads.value " + (stats.httpd.view_reads.sum || 0))
         }
       }
     })

@@ -34,7 +34,7 @@ if [ "$1" = "autoconf" ]; then
 fi
 
 if [ "$1" = "config" ]; then
-  echo 'graph_title TCP Connection States'
+  echo 'graph_title TCP Connection States (Port 80)'
   echo 'graph_args -l 0 --base 1000'
   echo 'graph_vlabel connections'
   echo 'graph_category network'

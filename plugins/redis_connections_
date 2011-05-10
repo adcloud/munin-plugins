@@ -14,9 +14,9 @@ if config
   puts "graph_title Redis Connections rate"
   puts "graph_category redis"
   puts "graph_vlabel connections/s"
-  puts "graph_info This graph monitors the connctions rate"
+  puts "graph_info This graph monitors the connections rate"
 
-  puts "connections.label connections"
+  puts "connections.label connections/s"
   puts "connections.type COUNTER"
   puts "connections.min 0"
 else
