@@ -48,8 +48,8 @@ fs.realpath(__filename, function(err, realpath) {
           sys.puts("reads.value U")
           sys.puts("writes.value U")
         } else {
-          sys.puts("reads.value " + (stats.couchdb.database_reads.mean || 0))
-          sys.puts("writes.value " + (stats.couchdb.database_writes.mean || 0))
+          sys.puts("reads.value " + (stats.couchdb.database_reads.sum || 0))
+          sys.puts("writes.value " + (stats.couchdb.database_writes.sum || 0))
         }
       }
     })

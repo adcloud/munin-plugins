@@ -47,7 +47,7 @@ fs.realpath(__filename, function(err, realpath) {
           if (err || typeof stats.httpd_request_methods[verb] === "undefined") {
             sys.puts(verb + ".value U")
           } else {
-            sys.puts(verb + ".value " + (stats.httpd_request_methods[verb].mean || 0))
+            sys.puts(verb + ".value " + (stats.httpd_request_methods[verb].sum || 0))
           }
         })
       }
