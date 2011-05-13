@@ -17,7 +17,7 @@ if config
   puts "graph_info This graph monitors the commands rate"
 
   puts "commands.label commands/s"
-  puts "commands.type COUNTER"
+  puts "commands.type DERIVE"
   puts "commands.min 0"
 else
   redis = Redis.new(:host => ip, :port => port)
