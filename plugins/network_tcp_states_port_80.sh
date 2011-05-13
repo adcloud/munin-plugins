@@ -43,7 +43,7 @@ if [ "$1" = "config" ]; then
   for i in ESTABLISHED SYN_SENT SYN_RECV FIN_WAIT1 FIN_WAIT2 TIME_WAIT CLOSE CLOSE_WAIT LAST_ACK CLOSING; do
     echo "$i.label $i"
     echo "$i.type GAUGE"
-    echo "$i.max 32999"
+    # echo "$i.max 32999"
     echo "$i.min 0"
   done
   exit 0
