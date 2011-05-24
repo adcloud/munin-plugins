@@ -1,0 +1,40 @@
+#!/usr/bin/env node
+// Munin plugin for CouchDB database doc count
+
+// Magic Markers for auto-configuration
+// #%# family=auto
+// #%# capabilities=autoconf suggest
+
+var sys = require("sys")
+  , http = require("http")
+
+if (process.argv[2] == "config") {
+  sys.puts("graph_title Placement Requests")
+  sys.puts("graph_args --base 1000")
+  sys.puts("graph_vlabel requests/s")
+  sys.puts("graph_category adserver")
+
+  sys.puts('placements.min 0')
+  sys.puts('placements.type DERIVE')
+  sys.puts("placements.label placements")
+}
+else {
+  var data = ""
+    , chunk = ""
+
+  var request = http.createClient(8888, "127.0.0.1").request('GET', '/counters');
+  request.end();
+
+  request.on('response', function (response) {
+    response.on('data', function (chunk) {
+      data += chunk
+    })
+
+    response.on("end", function() {
+      var counters = JSON.parse(data)
+
+      sys.puts("placements.value " + counters.adserver.getAds)
+
+    })
+  })
+}
