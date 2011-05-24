@@ -22,7 +22,7 @@ if config
   puts "keyspace_hits.draw AREA"
   puts "keyspace_hits.min 0"
 
-  puts "keyspace_misses.label hits/s"
+  puts "keyspace_misses.label misses/s"
   puts "keyspace_misses.type DERIVE"
   puts "keyspace_misses.draw STACK"
   puts "keyspace_misses.min 0"
