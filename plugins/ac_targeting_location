@@ -11,17 +11,17 @@ var sys = require("sys")
 if (process.argv[2] == "config") {
   sys.puts("graph_title Placement Location Targeting")
   sys.puts("graph_args --base 1000")
-  sys.puts("graph_vlabel Ratio")
+  sys.puts("graph_vlabel requests/s")
   sys.puts("graph_category adserver")
 
   sys.puts('locations_present.min 0')
   sys.puts('locations_present.type DERIVE')
-  sys.puts("locations_present.label misses/s")
+  sys.puts("locations_present.label present")
   sys.puts("locations_present.draw AREA")
 
   sys.puts('locations_missing.min 0')
   sys.puts('locations_missing.type DERIVE')
-  sys.puts("locations_missing.label hits/s")
+  sys.puts("locations_missing.label missing")
   sys.puts("locations_missing.draw STACK")
 }
 else {

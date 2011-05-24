@@ -9,14 +9,14 @@ var sys = require("sys")
   , http = require("http")
 
 if (process.argv[2] == "config") {
-  sys.puts("graph_title Retargeting Requests")
+  sys.puts("graph_title Retargeting Pixel Requests")
   sys.puts("graph_args --base 1000")
-  sys.puts("graph_vlabel Ratio")
+  sys.puts("graph_vlabel retargetings/s")
   sys.puts("graph_category adserver")
 
   sys.puts('retargeting.min 0')
   sys.puts('retargeting.type DERIVE')
-  sys.puts("retargeting.label req/s")
+  sys.puts("retargeting.label retargeting")
 }
 else {
   var data = ""

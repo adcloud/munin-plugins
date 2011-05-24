@@ -11,17 +11,17 @@ var sys = require("sys")
 if (process.argv[2] == "config") {
   sys.puts("graph_title Conversions")
   sys.puts("graph_args --base 1000")
-  sys.puts("graph_vlabel Ratio")
+  sys.puts("graph_vlabel conversions/s")
   sys.puts("graph_category adserver")
 
   sys.puts('conversion_success.min 0')
   sys.puts('conversion_success.type DERIVE')
-  sys.puts("conversion_success.label req/s")
+  sys.puts("conversion_success.label success")
   sys.puts("conversion_success.draw AREA")
 
   sys.puts('conversion_error.min 0')
   sys.puts('conversion_error.type DERIVE')
-  sys.puts("conversion_error.label req/s")
+  sys.puts("conversion_error.label error")
   sys.puts("conversion_error.draw STACK")
 
 }

@@ -11,12 +11,12 @@ var sys = require("sys")
 if (process.argv[2] == "config") {
   sys.puts("graph_title Redirect Requests")
   sys.puts("graph_args --base 1000")
-  sys.puts("graph_vlabel Ratio")
+  sys.puts("graph_vlabel redirects/s")
   sys.puts("graph_category adserver")
 
   sys.puts('redirect.min 0')
   sys.puts('redirect.type DERIVE')
-  sys.puts("redirect.label req/s")
+  sys.puts("redirect.label redirects")
 }
 else {
   var data = ""
