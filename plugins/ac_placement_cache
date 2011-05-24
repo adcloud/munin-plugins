@@ -1,0 +1,45 @@
+#!/usr/bin/env node
+// Munin plugin for CouchDB database doc count
+
+// Magic Markers for auto-configuration
+// #%# family=auto
+// #%# capabilities=autoconf suggest
+
+var sys = require("sys")
+  , http = require("http")
+
+if (process.argv[2] == "config") {
+  sys.puts("graph_title Placement Cache Hits/Misses per sec")
+  sys.puts("graph_args --base 1000")
+  sys.puts("graph_vlabel Ratio")
+  sys.puts("graph_category adserver")
+
+  sys.puts('placement_cache_misses.min 0')
+  sys.puts('placement_cache_misses.type DERIVE')
+  sys.puts("placement_cache_misses.label misses/s")
+  sys.puts("placement_cache_misses.draw AREA")
+
+  sys.puts('placement_cache_hits.min 0')
+  sys.puts('placement_cache_hits.type DERIVE')
+  sys.puts("placement_cache_hits.label hits/s")
+  sys.puts("placement_cache_hits.draw STACK")
+}
+else {
+  var data = ""
+    , chunk = ""
+
+  var request = http.createClient(8888, "127.0.0.1").request('GET', '/counters');
+  request.end();
+
+  request.on('response', function (response) {
+    response.on('data', function (chunk) {
+      data += chunk
+    })
+
+    response.on("end", function() {
+      var counters = JSON.parse(data)
+      sys.puts("placement_cache_misses.value " + counters.adserver.placementCacheMiss)
+      sys.puts("placement_cache_hits.value " + counters.adserver.placementCacheHit)
+    })
+  })
+}

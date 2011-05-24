@@ -1,0 +1,45 @@
+#!/usr/bin/env node
+// Munin plugin for CouchDB database doc count
+
+// Magic Markers for auto-configuration
+// #%# family=auto
+// #%# capabilities=autoconf suggest
+
+var sys = require("sys")
+  , http = require("http")
+
+if (process.argv[2] == "config") {
+  sys.puts("graph_title Placement Location Targeting")
+  sys.puts("graph_args --base 1000")
+  sys.puts("graph_vlabel Ratio")
+  sys.puts("graph_category adserver")
+
+  sys.puts('locations_present.min 0')
+  sys.puts('locations_present.type DERIVE')
+  sys.puts("locations_present.label misses/s")
+  sys.puts("locations_present.draw AREA")
+
+  sys.puts('locations_missing.min 0')
+  sys.puts('locations_missing.type DERIVE')
+  sys.puts("locations_missing.label hits/s")
+  sys.puts("locations_missing.draw STACK")
+}
+else {
+  var data = ""
+    , chunk = ""
+
+  var request = http.createClient(8888, "127.0.0.1").request('GET', '/counters');
+  request.end();
+
+  request.on('response', function (response) {
+    response.on('data', function (chunk) {
+      data += chunk
+    })
+
+    response.on("end", function() {
+      var counters = JSON.parse(data)
+      sys.puts("locations_present.value " + counters.adserver.locationsPresent)
+      sys.puts("locations_missing.value " + counters.adserver.locationsMissing)
+    })
+  })
+}
