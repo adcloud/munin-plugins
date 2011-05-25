@@ -14,6 +14,7 @@ if (process.argv[2] == "config") {
   sys.puts("graph_vlabel tracks/s")
   sys.puts("graph_category adserver")
   sys.puts("graph_period minute")
+  sys.puts("graph_info Request rate for /track requests")
 
   sys.puts('track.min 0')
   sys.puts('track.type DERIVE')

@@ -13,6 +13,7 @@ if (process.argv[2] == "config") {
   sys.puts("graph_args --base 1000")
   sys.puts("graph_vlabel requests/s")
   sys.puts("graph_category adserver")
+  sys.puts("graph_info Placement caches misses means that there was no ready-to-deliver cache version of the requested placement (incl. keywords and locations).")
 
   sys.puts('placement_cache_misses.min 0')
   sys.puts('placement_cache_misses.type DERIVE')

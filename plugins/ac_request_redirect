@@ -14,6 +14,7 @@ if (process.argv[2] == "config") {
   sys.puts("graph_vlabel redirects/s")
   sys.puts("graph_category adserver")
   sys.puts("graph_period minute")
+  sys.puts("graph_info Request rate for /redirect requests")
 
   sys.puts('redirect.min 0')
   sys.puts('redirect.type DERIVE')
