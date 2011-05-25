@@ -16,14 +16,7 @@ if (process.argv[2] == "config") {
 
   sys.puts('retargeting_present.min 0')
   sys.puts('retargeting_present.type DERIVE')
-  sys.puts("retargeting_present.label present")
-  sys.puts("retargeting_present.draw AREA")
-
-  sys.puts('retargeting_missing.min 0')
-  sys.puts('retargeting_missing.type DERIVE')
-  sys.puts("retargeting_missing.label missing")
-  sys.puts("retargeting_missing.draw STACK")
-
+  sys.puts("retargeting_present.label retargeting keywords used")
 }
 else {
   var data = ""
@@ -39,10 +32,7 @@ else {
 
     response.on("end", function() {
       var counters = JSON.parse(data)
-
       sys.puts("retargeting_present.value " + counters.adserver.retargetingPresent)
-      sys.puts("retargeting_missing.value " + counters.adserver.retargetingMissing)
-
     })
   })
 }

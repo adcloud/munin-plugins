@@ -16,13 +16,7 @@ if (process.argv[2] == "config") {
 
   sys.puts('locations_present.min 0')
   sys.puts('locations_present.type DERIVE')
-  sys.puts("locations_present.label present")
-  sys.puts("locations_present.draw AREA")
-
-  sys.puts('locations_missing.min 0')
-  sys.puts('locations_missing.type DERIVE')
-  sys.puts("locations_missing.label missing")
-  sys.puts("locations_missing.draw STACK")
+  sys.puts("locations_present.label present in request")
 }
 else {
   var data = ""
@@ -39,7 +33,6 @@ else {
     response.on("end", function() {
       var counters = JSON.parse(data)
       sys.puts("locations_present.value " + counters.adserver.locationsPresent)
-      sys.puts("locations_missing.value " + counters.adserver.locationsMissing)
     })
   })
 }

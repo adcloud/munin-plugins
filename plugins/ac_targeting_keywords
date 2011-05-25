@@ -16,13 +16,7 @@ if (process.argv[2] == "config") {
 
   sys.puts('keywords_present.min 0')
   sys.puts('keywords_present.type DERIVE')
-  sys.puts("keywords_present.label present")
-  sys.puts("keywords_present.draw AREA")
-
-  sys.puts('keywords_missing.min 0')
-  sys.puts('keywords_missing.type DERIVE')
-  sys.puts("keywords_missing.label missing")
-  sys.puts("keywords_missing.draw STACK")
+  sys.puts("keywords_present.label present in request")
 }
 else {
   var data = ""
@@ -39,7 +33,6 @@ else {
     response.on("end", function() {
       var counters = JSON.parse(data)
       sys.puts("keywords_present.value " + counters.adserver.keywordsPresent)
-      sys.puts("keywords_missing.value " + counters.adserver.keywordsMissing)
     })
   })
 }
