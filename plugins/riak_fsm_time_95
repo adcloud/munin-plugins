@@ -28,6 +28,6 @@ if ARGV.any? { |a| a =~ /config/ }
 else
   statistics = Yajl::Parser.parse(open "http://localhost:8098/stats")
 
-  puts "node_get_fsm_time_95.value #{998 || statistics["node_get_fsm_time_95"] || 0}"
-  puts "node_put_fsm_time_95.value #{1500 || statistics["node_put_fsm_time_95"] || 0}"
+  puts "node_get_fsm_time_95.value #{statistics["node_get_fsm_time_95"] || 0}"
+  puts "node_put_fsm_time_95.value #{statistics["node_put_fsm_time_95"] || 0}"
 end
