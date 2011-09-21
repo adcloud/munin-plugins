@@ -1,46 +1,30 @@
-#!/usr/bin/env node
+#!/usr/bin/env ruby
 
-// Munin plugin for Riak vnode gets/puts
+require 'rubygems'
 
-// Magic Markers for auto-configuration
-// #%# family=auto
-// #%# capabilities=autoconf suggest
+require 'yajl'
+require 'open-uri'
 
-var sys = require("sys")
-  , http = require("http")
+if ARGV.any? { |a| a =~ /config/ }
+  puts "graph_title vnode gets & puts"
+  puts "graph_args --base 1000"
+  puts "graph_vlabel number of gets (-) and puts (+) / \${graph_period}"
+  puts "graph_category riak"
 
-if (process.argv[2] == "config") {
-  sys.puts("graph_title vnode gets & puts")
-  sys.puts("graph_args --base 1000")
-  sys.puts("graph_vlabel number of gets (-) and puts (+) / \${graph_period}")
-  sys.puts("graph_category riak")
+  puts "vnode_gets.label vnode_gets"
+  puts "vnode_gets.graph no"
+  puts "vnode_gets.type COUNTER"
+  puts "vnode_gets.min 0"
+  puts "vnode_gets.max 1000000"
 
-  sys.puts("vnode_gets.label vnode_gets")
-  sys.puts("vnode_gets.graph no")
-  sys.puts("vnode_gets.type COUNTER")
-  sys.puts("vnode_gets.min 0")
-  sys.puts("vnode_gets.max 1000000")
+  puts "vnode_puts.label vnode gets/puts"
+  puts "vnode_puts.type COUNTER"
+  puts "vnode_puts.min 0"
+  puts "vnode_puts.max 1000000"
+  puts "vnode_puts.negative vnode_gets"
+else
+  statistics = Yajl::Parser.parse(open "http://localhost:8098/stats")
 
-  sys.puts("vnode_puts.label vnode gets/puts")
-  sys.puts("vnode_puts.type COUNTER")
-  sys.puts("vnode_puts.min 0")
-  sys.puts("vnode_puts.max 1000000")
-  sys.puts("vnode_puts.negative vnode_gets")
-}
-else {
-  var data = ""
-    , chunk = ""
-
-  var request = http.createClient(8098, "127.0.0.1").request('GET', '/stats')
-  request.end();
-
-  request.on('response', function (response) {
-    response.on('data', function (chunk) { data += chunk })
-    response.on("end", function() {
-      var statistics = JSON.parse(data)
-
-      sys.puts("vnode_gets.value " + statistics.vnode_gets_total || 0)
-      sys.puts("vnode_puts.value " + statistics.vnode_puts_total || 0)
-    })
-  })
-}
+  puts "vnode_gets.value #{statistics["vnode_gets_total"] || 0}"
+  puts "vnode_puts.value #{statistics["vnode_puts_total"] || 0}"
+end
