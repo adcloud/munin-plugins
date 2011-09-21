@@ -1,0 +1,49 @@
+#!/usr/bin/env node
+
+// Munin plugin for Riak FSM times of 95%
+
+// Magic Markers for auto-configuration
+// #%# family=auto
+// #%# capabilities=autoconf suggest
+
+var sys = require("sys")
+  , http = require("http")
+
+if (process.argv[2] == "config") {
+  sys.puts("graph_title 95th percentile of FSM time")
+  sys.puts("graph_args --base 1000")
+  sys.puts("graph_vlabel gets (-) puts (+) in ms")
+  sys.puts("graph_category riak")
+  sys.puts("graph_info Response time, in milliseconds, met or beaten by 95% of riak_kv_get_fsm executions.")
+
+  sys.puts("get_fsm_time_95.label vnode_gets")
+  sys.puts("get_fsm_time_95.graph no")
+  sys.puts("get_fsm_time_95.type GAUGE")
+  sys.puts("get_fsm_time_95.cdef get_fsm_time_95,1000,/")
+  sys.puts("get_fsm_time_95.min 0")
+  sys.puts("get_fsm_time_95.draw LINE1")
+
+  sys.puts("put_fsm_time_95.label vnode gets/puts")
+  sys.puts("put_fsm_time_95.type GAUGE")
+  sys.puts("put_fsm_time_95.min 0")
+  sys.puts("put_fsm_time_95.cdef put_fsm_time_95,1000,/")  
+  sys.puts("put_fsm_time_95.negative get_fsm_time_95")
+  sys.puts("put_fsm_time_95.draw LINE1")
+}
+else {
+  var data = ""
+    , chunk = ""
+
+  var request = http.createClient(8098, "127.0.0.1").request('GET', '/stats')
+  request.end();
+
+  request.on('response', function (response) {
+    response.on('data', function (chunk) { data += chunk })
+    response.on("end", function() {
+      var statistics = JSON.parse(data)
+
+      sys.puts("node_get_fsm_time_95.value " + 998 || statistics.node_get_fsm_time_95 || 0)
+      sys.puts("node_put_fsm_time_95.value " + 1500 || statistics.node_put_fsm_time_95 || 0)
+    })
+  })
+}
