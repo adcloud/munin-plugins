@@ -1,0 +1,40 @@
+#!/usr/bin/env node
+// Munin plugin for CouchDB database doc count
+
+// Magic Markers for auto-configuration
+// #%# family=auto
+// #%# capabilities=autoconf suggest
+
+var sys = require("sys")
+  , http = require("http")
+  , counter = "geo_data_take_down"
+
+if (process.argv[2] == "config") {
+  sys.puts("graph_title Geo db took down")
+  sys.puts("graph_args --base 1000")
+  sys.puts("graph_vlabel requests/s")
+  sys.puts("graph_category adserver")
+  sys.puts("graph_info The geo db is taken down after 10 consecutive slow requests.")
+
+  sys.puts(counter + '.min 0')
+  sys.puts(counter + '.type DERIVE')
+  sys.puts(counter + ".label geo db has been taken down")
+}
+else {
+  var data = ""
+    , chunk = ""
+
+  var request = http.createClient(8888, "127.0.0.1").request('GET', '/counters');
+  request.end();
+
+  request.on('response', function (response) {
+    response.on('data', function (chunk) {
+      data += chunk
+    })
+
+    response.on("end", function() {
+      var counters = JSON.parse(data)
+      sys.puts(counter + ".value " + counters.adserver[counter])
+    })
+  })
+}
