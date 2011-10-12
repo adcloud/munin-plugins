@@ -29,10 +29,12 @@ fs.realpath(__filename, function(err, realpath) {
     sys.puts("reads.type COUNTER")
     sys.puts("reads.min 0")
     sys.puts("reads.max 1000000")
+    sys.puts("reads.draw LINE1")
     sys.puts("writes.label reads/writes")
     sys.puts("writes.type COUNTER")
     sys.puts("writes.min 0")
     sys.puts("writes.max 1000000")
+    sys.puts("writes.draw LINE1")
     sys.puts("writes.negative reads")
   } else {
     conn.stats(function(err, stats) {

@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+
+require 'yajl'
+require 'open-uri'
+
+if ARGV.any? { |a| a =~ /config/ }
+  puts "graph_title 95th percentile of FSM time"
+  puts "graph_args --base 1000"
+  puts "graph_vlabel gets (-) puts (+) in ms"
+  puts "graph_category riak"
+  puts "graph_info Response time, in milliseconds, met or beaten by 95% of riak_kv_get_fsm executions."
+
+  puts "get_fsm_time_95.label vnode_gets"
+  puts "get_fsm_time_95.graph no"
+  puts "get_fsm_time_95.type GAUGE"
+  puts "get_fsm_time_95.cdef get_fsm_time_95,1000,/"
+  puts "get_fsm_time_95.min 0"
+  puts "get_fsm_time_95.draw LINE1"
+
+  puts "put_fsm_time_95.label vnode gets/puts"
+  puts "put_fsm_time_95.type GAUGE"
+  puts "put_fsm_time_95.min 0"
+  puts "put_fsm_time_95.cdef put_fsm_time_95,1000,/"
+  puts "put_fsm_time_95.negative get_fsm_time_95"
+  puts "put_fsm_time_95.draw LINE1"
+else
+  statistics = Yajl::Parser.parse(open "http://localhost:8098/stats")
+
+  puts "get_fsm_time_95.value #{statistics["node_get_fsm_time_95"] || 0}"
+  puts "put_fsm_time_95.value #{statistics["node_put_fsm_time_95"] || 0}"
+end
