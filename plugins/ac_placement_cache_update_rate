@@ -7,17 +7,19 @@
 
 var sys = require("sys")
   , http = require("http")
+  , counter = "placement_cache_update"
 
 if (process.argv[2] == "config") {
-  sys.puts("graph_title Placement Cache Misses")
+  sys.puts("graph_title Placement cache updates")
   sys.puts("graph_args --base 1000")
-  sys.puts("graph_vlabel requests/s")
+  sys.puts("graph_vlabel updates/s")
   sys.puts("graph_category adserver")
-  sys.puts("graph_info Placement caches misses means that there was no ready-to-deliver cache version of the requested placement (incl. keywords and locations).")
+  sys.puts("graph_info Cache updates that store placement data in redis")
 
-  sys.puts('placement_cache_misses.min 0')
-  sys.puts('placement_cache_misses.type DERIVE')
-  sys.puts("placement_cache_misses.label cache misses")
+  sys.puts(counter + '.min 0')
+  sys.puts(counter + '.type DERIVE')
+  sys.puts(counter + ".label cache updates")
+  sys.puts(counter + ".draw LINE1")
 }
 else {
   var data = ""
@@ -33,7 +35,7 @@ else {
 
     response.on("end", function() {
       var counters = JSON.parse(data)
-      sys.puts("placement_cache_misses.value " + counters.adserver.placementCacheMiss)
+      sys.puts(counter + ".value " + counters.adserver[counter])
     })
   })
 }
