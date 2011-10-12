@@ -19,6 +19,7 @@ if (process.argv[2] == "config") {
   sys.puts(counter + '.min 0')
   sys.puts(counter + '.type DERIVE')
   sys.puts(counter + ".label geo data skipped")
+  sys.puts(counter + ".draw LINE1")
 }
 else {
   var data = ""

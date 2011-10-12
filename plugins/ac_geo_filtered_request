@@ -17,6 +17,7 @@ if (process.argv[2] == "config") {
   sys.puts('geo_filtered_requests.min 0')
   sys.puts('geo_filtered_requests.type DERIVE')
   sys.puts('geo_filtered_requests.label geo filtered requests')
+  sys.puts('geo_filtered_requests.draw LINE1')
 }
 else {
   var data = ""

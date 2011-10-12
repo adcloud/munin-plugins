@@ -19,6 +19,7 @@ if (process.argv[2] == "config") {
   sys.puts(counter + '.min 0')
   sys.puts(counter + '.type DERIVE')
   sys.puts(counter + ".label geo db has been taken down")
+  sys.puts(counter + ".draw LINE1")
 }
 else {
   var data = ""
