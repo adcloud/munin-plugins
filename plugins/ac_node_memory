@@ -1,0 +1,61 @@
+#!/usr/bin/env node
+// Munin plugin for Adserver node memory usage
+
+// Magic Markers for auto-configuration
+// #%# family=auto
+// #%# capabilities=autoconf suggest
+
+var sys = require("sys")
+  , exec = require("child_process").exec
+  , mode = "fetch"
+
+// could be "config" or "autoconf" mode
+if (process.argv[2] !== undefined) mode = process.argv[2]
+
+exec("free", function(err, data) {
+  var total = arguments[1].split("\n")[1].split(/\s+/)[1];
+
+  if (mode === 'config') {
+    sys.puts("graph_title Adserver Memory")
+    sys.puts("graph_args --base 1024 -l 0 --vertical-label Bytes --upper-limit " + total)
+    sys.puts("graph_category adserver")
+
+    sys.puts("master_memory.label master")
+    sys.puts("master_memory.draw AREA")
+
+    sys.puts("web_memory.label web worker")
+    sys.puts("web_memory.draw STACK")
+
+    sys.puts("cache_memory.label cache updater")
+    sys.puts("cache_memory.draw STACK")
+  } else {
+    var rss = 0
+      , val
+    exec("ps -U node -u node u -ww", function(err, data) {
+      data = data.split("\n")
+      data.shift()
+      data.pop()
+
+      val = {
+        "master": {"rss": 0},
+        "web": {"rss": 0},
+        "cache": {"rss": 0}
+      }
+
+      data.forEach(function(line) {
+        var port = parseInt((line.match(/--port=(\d+)/) || [0,0])[1])
+          , job = (line.match(/.*--job=(\w+)/) || [undefined,undefined])[1] || "master"
+          , values = line.split(/\s+/)
+        
+        val[job]["rss"] += parseInt(values[5])
+      })
+
+      Object.keys(val).forEach(function(job) {
+        sys.puts([job, "memory"].join("_") + ".value " + (val[job]["rss"] * 1024))
+      })
+    })
+  }
+})
+
+
+
