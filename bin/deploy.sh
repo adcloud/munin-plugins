@@ -1,8 +1,29 @@
 #!/usr/bin/env bash
 
-CURRENT=$(cd `dirname $0`; cd ..; pwd)
+CURRENT_DIR=$(cd `dirname $0`; cd ..; pwd)
+REMOTE_DIR="~/munin-plugins"
+PREFIX="~"
+SERVER=$1
+TYPE=$2
 
-rm /etc/munin/plugins/{ac,redis,network,couchdb}*
-ln -s $CURRENT/plugins/{ac,redis,network,couchdb}_* /etc/munin/plugins/
-cd $CURRENT; npm install
-service munin-node restart
+if test -z $SERVER; then
+  echo "ERROR: no server given"
+  exit 1
+fi
+if test -z $TYPE; then
+  echo "ERROR: no type (adserver, redis, riak) given"
+  exit 2
+fi
+
+echo "Deploying plugins..."
+echo
+rsync --rsh 'ssh' \
+      --exclude "node_modules/" \
+      --exclude ".git/" \
+      --delete \
+      --compress \
+      --recursive \
+      $CURRENT_DIR $SERVER:$PREFIX
+
+# install
+ssh $SERVER "cd $REMOTE_DIR && ./bin/install.sh $TYPE"
